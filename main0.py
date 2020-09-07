@@ -10,6 +10,8 @@ continue_playing = True
 while continue_playing:
     game = ttt.Game()
     game.play()
+
+#TODO Run and debug!
     
 
 
