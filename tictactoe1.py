@@ -1,10 +1,10 @@
 import copy
 
 BOARD_DIMENSIONS = 3
-X = 'X'
-O = 'O'
-EMPTY = None
-X_utility, O_utility = None, None  # will be set by the method 'markers()' of class Game.
+X = Cell("X")
+O = Cell("O")
+EMPTY = Cell(None)
+
 
 class Game:
     def __init__(self):
@@ -12,7 +12,7 @@ class Game:
 
 
     def play(self):
-        human_marker, computer_marker = Game.markers()
+        human_marker, computer_marker = Game.get_markers()
         print(f"You'll play as {human_marker} and Computer will play as {computer_marker}.\n")
         print("Do you want to make the first move?")
         play_first = input("Yes[y/Y]: ").upper()
@@ -43,22 +43,18 @@ class Game:
         print("GAME OVER.")
 
     @staticmethod
-    def markers():
+    def get_markers():
         '''
         Gets valid marker from user and returns that marker alongside
         the compliment of that marker
         '''
-        global X_utility, O_utility
         print("Choose your marker:")
         while True:
             human_marker = input("'X' or 'O': ").upper()
             if human_marker == X:
-                X_utility = -1
-                O_utility = 1
+
                 return human_marker, O
             elif human_marker == O:
-                X_utility = 1
-                O_utility = -1
                 return human_marker, X
             print("Error, invalid marker.")
             print()
@@ -82,14 +78,14 @@ class Game:
 
 
 class Cell:
-    def __init__(self, coordinates):
-        self.marker = EMPTY
-        self.__coordinates = coordinates
+    def __init__(self, marker):
+        self.marker = marker
+        self.__coordinates = (None)
 
     def getCoordinates(self):
         return self.__coordinates
 
-    def setMarker(self, marker):  # TODO: make marker a PROPERTY
+    def setMarker(self, marker):  # TODO: make marker a PROPERTY?
         self.marker = marker
 
     def __repr__(self):
@@ -105,15 +101,14 @@ class Board:
         for i in range(9):
             self.free_positions[i + 1] = next(empty_coordinates)
 
-    def update(self, marker, coordinate):
+    def update(self, marker, position):
         '''
-        places the given marker at the cell at the given coordinate
+        places the given marker at the given position's cell
         '''
         print(self.free_positions)
-        pos = Board.position_from_coordinate(coordinate)
-        self.free_positions.pop(pos)
-        x = coordinate[0]
-        y = coordinate[1]
+        coordinates = self.free_positions.pop(position)
+        x = coordinates[0]
+        y = coordinates[1]
         self.grid[x][y].setMarker(marker)
 
     def terminal(self):
@@ -142,15 +137,11 @@ class Board:
         if (move[0] not in range(0, BOARD_DIMENSIONS)) or (move[1] not in range(0, BOARD_DIMENSIONS)):
             raise IndexError(f"Invalid action: {action}.")
 
-        resultant_board = copy.deepcopy(self)
+        resultant_board = self
+        #esultant_board[move[0]][move[1]] = self.current_player_marker()
         pos = Board.position_from_coordinate(move)
-        current_marker = self.current_player_marker()
-        resultant_board.update(current_marker, pos)
+        resultant_board.update(X, pos)
         return resultant_board
-        # resultant_grid[move[0]][move[1]] = Cell(self.current_player_marker()
-        # print(resultant_grid)
-        # resultant_board = Board()
-
 
     def utility(self):  ## bigTODO
         """
@@ -160,10 +151,10 @@ class Board:
         winning_marker = self.winner()
         if winning_marker is EMPTY:
             return 0
-        elif winning_marker == X:
-            return X_utility
+        elif winning_marker == player1.marker:
+            return player1.utility
         else:
-            return O_utility
+            return player2.utility
 
     def winner(self):
         '''
@@ -221,7 +212,7 @@ class Board:
         else:
             row = 2
 
-        col = (pos - 1) - (3 * row)  # since position = (3 * row) + col + 1
+        col = position - 1 - (3 * row)  # since position = (3 * row) + col + 1
         return (row, col)
 
 
@@ -238,7 +229,7 @@ class Board:
                 if col == 2:  # no need to add a bar if last element of row
                     bar = ''
                 if marker is EMPTY:
-                    board_str += f' ({Board.position_from_coordinate((row, col))}) ' + bar
+                    board_str += f' ({Board.position_from_coordinate((row, col))} ' + bar
                 else:
                     board_str += f'  {marker}  ' + bar
             bar = "|"  # reset bar to original value for usage in next row
@@ -354,17 +345,3 @@ class AI(Player):
 
 
 
-b = Board()
-x = 0
-for i in range(3):
-    for j in range(3):
-        if i == j == 2:
-            x += 1
-            continue
-        if x % 2:
-            b.update(X, (i, j))
-        else:
-            b.update("O", (i, j))
-        x += 1
-c = AI("O")
-print(b)
