@@ -19,11 +19,11 @@ class Game:
         print("Do you want to make the first move?")
         play_first = input("Enter y/Y if yes: ").upper()
         if play_first == 'Y':
-            self.player1 = Player(marker=human_marker)
+            self.player1 = Player(marker=human_marker, alias="Your")
             self.player2 = AI(marker=computer_marker)
         else:
             self.player1 = AI(marker=computer_marker)
-            self.player2 = Player(marker=human_marker)
+            self.player2 = Player(marker=human_marker, alias="Your")
         print()
 
         self.gameloop()
@@ -36,7 +36,7 @@ class Game:
             print("<<<IT'S A TIE!>>>")
         elif self.player1.marker == winner:
             if isinstance(self.player1, AI):
-                print("<<<COMPUTER WINS>>>!")
+                print("<<<COMPUTER WINS!>>>")
             else:
                 print("<<<YOU WIN!>>>")
         else:
@@ -259,15 +259,16 @@ class Board:
 
 
 class Player:
-    def __init__(self, marker):
+    def __init__(self, marker, alias):
         self.marker = marker
+        self.alias = alias
 
     def make_move(self, board):
         '''
         takes a board input, gets a valid position from the user
         to make on that board and returns the position.
         '''
-        print("-> Your move")
+        print(f"{alias} turn")
         print(board)
         while True:
             try:
@@ -286,12 +287,15 @@ from the given board.")
 
 
 class AI(Player):
+    def __init__(self, marker, alias="Computer"):
+        super().__init__(marker, alias)
+
     def make_move(self, board):
-        '''takes a board state as input andreturns the optimal coordinate to make
+        '''takes a board state as input and returns the optimal coordinate to make
         on the current board state; i.e the coordinate that will lead to a state
         with best utility possible from the current state.
         '''
-        print("-> Computer's move")
+        print("-> Computer's turn")
         print(board)
         print("Computer thinking....")
 
