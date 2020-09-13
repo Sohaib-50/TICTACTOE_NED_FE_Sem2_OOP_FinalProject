@@ -1,4 +1,4 @@
-import tictactoe2 as tictactoe
+import tictactoe1 as tictactoe
 from sys import exit
 
 print("***********")
@@ -17,9 +17,9 @@ def get_game_mode() -> int:
 
 while 1 < 2:
     if get_game_mode() == 'S':
-        game = tictactoe.singlePlayerMode()
+        game = tictactoe.SinglePlayerMode()
     else:
-        game = tictactoe.twoPlayerMode()
+        game = tictactoe.TwoPlayerMode()
     print()
     game.play()
     print()
