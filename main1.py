@@ -6,7 +6,7 @@ print("TIC-TAC-TOE")
 print("***********")
 print()
 
-def get_game_mode() -> int:
+def get_game_mode() -> str:
     print("Choose game mode:")
     while True:
         mode = input("Press s/S for single player mode (play vs computer); t/T for two player mode: ").upper()
